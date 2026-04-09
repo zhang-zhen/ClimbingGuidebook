@@ -157,6 +157,24 @@
             box-shadow: 0 3px 10px rgba(229, 62, 62, 0.4);
         }
 
+        .btn-edit {
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            color: white;
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-right: 10px;
+        }
+
+        .btn-edit:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(72, 187, 120, 0.4);
+        }
+
         .item-container {
             background: white;
             padding: 15px;
@@ -231,6 +249,104 @@
             margin-right: 10px;
             font-size: 1.2em;
         }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 2% auto;
+            padding: 0;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideIn 0.3s ease;
+        }
+
+        @keyframes modalSlideIn {
+            from {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 1.5em;
+        }
+
+        .close {
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.2s;
+        }
+
+        .close:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 30px;
+        }
+
+        .modal-actions {
+            padding: 20px 30px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .btn-cancel {
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .btn-cancel:hover {
+            background: #cbd5e0;
+        }
     </style>
 </head>
 <body>
@@ -244,6 +360,7 @@
         <div class="tabs">
             <button class="tab active" onclick="switchTab('areas')">🏔️ Areas</button>
             <button class="tab" onclick="switchTab('crags')">🪨 Crags</button>
+            <button class="tab" onclick="switchTab('walls')">🧱 Walls</button>
             <button class="tab" onclick="switchTab('sectors')">📍 Sectors</button>
             <button class="tab" onclick="switchTab('routes')">🧗 Routes</button>
             <button class="tab" onclick="switchTab('view')">👁️ View Data</button>
@@ -261,8 +378,8 @@
                             <input type="text" id="area_name_zh" name="name_zh" required>
                         </div>
                         <div class="form-group">
-                            <label for="area_name_en">Area Name (English) *</label>
-                            <input type="text" id="area_name_en" name="name_en" required>
+                            <label for="area_name_en">Area Name (English)</label>
+                            <input type="text" id="area_name_en" name="name_en">
                         </div>
                     </div>
                     <div class="form-row">
@@ -275,6 +392,14 @@
                             <textarea id="area_description_en" name="description_en"></textarea>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="area_pictures">Upload Photos</label>
+                        <input type="file" id="area_pictures" name="pictures" multiple accept="image/*">
+                        <small style="color: #718096; display: block; margin-top: 5px;">
+                            Select multiple images (JPG, PNG, GIF). Hold Ctrl/Cmd to select multiple files.
+                        </small>
+                    </div>
+                    <div id="picturePreview" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-top: 15px;"></div>
                 </div>
 
                 <div class="form-section">
@@ -329,6 +454,20 @@
                     </div>
                 </div>
 
+                <div class="form-section">
+                    <h3><span class="section-icon">🚗</span>Access Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="area_access_notes_zh">Access Notes (Chinese)</label>
+                            <textarea id="area_access_notes_zh" name="access_notes_zh" placeholder="如何到达这个区域的详细信息..."></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="area_access_notes_en">Access Notes (English)</label>
+                            <textarea id="area_access_notes_en" name="access_notes_en" placeholder="Detailed information on how to reach this area..."></textarea>
+                        </div>
+                    </div>
+                </div>
+
                 <button type="submit" class="btn">Add Area</button>
             </form>
             <div id="areaSuccess" class="success"></div>
@@ -353,8 +492,8 @@
                             <input type="text" id="crag_name_zh" name="name_zh" required>
                         </div>
                         <div class="form-group">
-                            <label for="crag_name_en">Crag Name (English) *</label>
-                            <input type="text" id="crag_name_en" name="name_en" required>
+                            <label for="crag_name_en">Crag Name (English)</label>
+                            <input type="text" id="crag_name_en" name="name_en">
                         </div>
                     </div>
                     <div class="form-row">
@@ -440,6 +579,74 @@
             <div id="cragError" class="error"></div>
         </div>
 
+        <!-- Walls Tab -->
+        <div id="walls" class="tab-content">
+            <h2>Add New Wall</h2>
+            <form id="wallForm">
+                <div class="form-section">
+                    <h3><span class="section-icon">🪨</span>Basic Information</h3>
+                    <div class="form-group">
+                        <label for="wall_crag_id">Parent Crag *</label>
+                        <select id="wall_crag_id" name="crag_id" required>
+                            <option value="">Select a crag...</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="wall_name_zh">Wall Name (Chinese) *</label>
+                            <input type="text" id="wall_name_zh" name="name_zh" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="wall_name_en">Wall Name (English)</label>
+                            <input type="text" id="wall_name_en" name="name_en">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="wall_description_zh">Description (Chinese)</label>
+                            <textarea id="wall_description_zh" name="description_zh"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="wall_description_en">Description (English)</label>
+                            <textarea id="wall_description_en" name="description_en"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3><span class="section-icon">📐</span>Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="wall_orientation">Orientation</label>
+                            <select id="wall_orientation" name="orientation">
+                                <option value="">Select orientation...</option>
+                                <option value="N">North (N)</option>
+                                <option value="NE">Northeast (NE)</option>
+                                <option value="E">East (E)</option>
+                                <option value="SE">Southeast (SE)</option>
+                                <option value="S">South (S)</option>
+                                <option value="SW">Southwest (SW)</option>
+                                <option value="W">West (W)</option>
+                                <option value="NW">Northwest (NW)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="wall_height">Wall Height (meters)</label>
+                            <input type="number" id="wall_height" name="wall_height_meters">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="wall_order">Wall Order</label>
+                        <input type="number" id="wall_order" name="wall_order" min="1">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn">Add Wall</button>
+            </form>
+            <div id="wallSuccess" class="success"></div>
+            <div id="wallError" class="error"></div>
+        </div>
+
         <!-- Sectors Tab -->
         <div id="sectors" class="tab-content">
             <h2>Add New Sector</h2>
@@ -448,8 +655,14 @@
                     <h3><span class="section-icon">🪨</span>Basic Information</h3>
                     <div class="form-group">
                         <label for="sector_crag_id">Parent Crag *</label>
-                        <select id="sector_crag_id" name="crag_id" required>
+                        <select id="sector_crag_id" name="crag_id" required onchange="loadWallsForSector(this.value)">
                             <option value="">Select a crag...</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="sector_wall_id">Parent Wall *</label>
+                        <select id="sector_wall_id" name="wall_id" required>
+                            <option value="">Select a crag first...</option>
                         </select>
                     </div>
                     <div class="form-row">
@@ -458,8 +671,8 @@
                             <input type="text" id="sector_name_zh" name="name_zh" required>
                         </div>
                         <div class="form-group">
-                            <label for="sector_name_en">Sector Name (English) *</label>
-                            <input type="text" id="sector_name_en" name="name_en" required>
+                            <label for="sector_name_en">Sector Name (English)</label>
+                            <input type="text" id="sector_name_en" name="name_en">
                         </div>
                     </div>
                     <div class="form-row">
@@ -512,8 +725,8 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="route_sector_id">Sector</label>
-                            <select id="route_sector_id" name="sector_id">
+                            <label for="route_sector_id">Sector *</label>
+                            <select id="route_sector_id" name="sector_id" required>
                                 <option value="">Select a sector...</option>
                             </select>
                         </div>
@@ -524,8 +737,8 @@
                             <input type="text" id="route_name_zh" name="name_zh" required>
                         </div>
                         <div class="form-group">
-                            <label for="route_name_en">Route Name (English) *</label>
-                            <input type="text" id="route_name_en" name="name_en" required>
+                            <label for="route_name_en">Route Name (English)</label>
+                            <input type="text" id="route_name_en" name="name_en">
                         </div>
                     </div>
                 </div>
@@ -534,18 +747,12 @@
                     <h3><span class="section-icon">📊</span>Grade & Difficulty</h3>
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="route_grade_yds">Grade (YDS)</label>
-                            <input type="text" id="route_grade_yds" name="grade_yds" placeholder="e.g., 5.10a">
+                            <label for="route_grade">Grade</label>
+                            <input type="text" id="route_grade" name="grade" placeholder="e.g., 6a, 5.10a">
                         </div>
-                        <div class="form-group">
-                            <label for="route_grade_french">Grade (French)</label>
-                            <input type="text" id="route_grade_french" name="grade_french" placeholder="e.g., 6a">
-                        </div>
-                    </div>
-                    <div class="form-row">
                         <div class="form-group">
                             <label for="route_quality">Quality Rating (1-5)</label>
-                            <select id="route_quality" name="quality_rating">
+                            <select id="route_quality" name="rating">
                                 <option value="">Select quality...</option>
                                 <option value="1">⭐ (1 star)</option>
                                 <option value="2">⭐⭐ (2 stars)</option>
@@ -604,6 +811,27 @@
         </div>
     </div>
 
+    <!-- Edit Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Edit Item</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <form id="editForm">
+                    <div id="modalFormFields">
+                        <!-- Form fields will be populated dynamically -->
+                    </div>
+                </form>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeModal()">Cancel</button>
+                <button type="button" class="btn" onclick="saveEditItem()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         const API_BASE = 'http://localhost:3000';
 
@@ -611,7 +839,60 @@
         window.addEventListener('load', async () => {
             await checkApiConnection();
             await loadDropdownData();
+            setupFilePreview();
         });
+
+        // Setup file preview functionality
+        function setupFilePreview() {
+            const fileInput = document.getElementById('area_pictures');
+            const previewContainer = document.getElementById('picturePreview');
+            
+            fileInput.addEventListener('change', function(event) {
+                previewContainer.innerHTML = '';
+                const files = event.target.files;
+                
+                for (let i = 0; i < files.length; i++) {
+                    const file = files[i];
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(e) {
+                            const imageContainer = document.createElement('div');
+                            imageContainer.style.cssText = `
+                                position: relative;
+                                border-radius: 8px;
+                                overflow: hidden;
+                                background: #f7fafc;
+                                border: 2px solid #e2e8f0;
+                            `;
+                            
+                            const img = document.createElement('img');
+                            img.src = e.target.result;
+                            img.style.cssText = `
+                                width: 100%;
+                                height: 120px;
+                                object-fit: cover;
+                                display: block;
+                            `;
+                            
+                            const filename = document.createElement('div');
+                            filename.textContent = file.name;
+                            filename.style.cssText = `
+                                padding: 8px;
+                                font-size: 12px;
+                                color: #4a5568;
+                                text-align: center;
+                                word-break: break-word;
+                            `;
+                            
+                            imageContainer.appendChild(img);
+                            imageContainer.appendChild(filename);
+                            previewContainer.appendChild(imageContainer);
+                        };
+                        reader.readAsDataURL(file);
+                    }
+                }
+            });
+        }
 
         async function checkApiConnection() {
             try {
@@ -667,6 +948,20 @@
                         }
                     }
                     
+                    // For wall form
+                    const wallCragSelect = document.getElementById('wall_crag_id');
+                    if (wallCragSelect) {
+                        wallCragSelect.innerHTML = '<option value="">Select a crag...</option>';
+                        if (cragsData.success && cragsData.data) {
+                            cragsData.data.forEach(crag => {
+                                const option = document.createElement('option');
+                                option.value = crag.crag_id;
+                                option.textContent = `${crag.name_zh} (${crag.name_en}) - ${crag.area_name_zh}`;
+                                wallCragSelect.appendChild(option);
+                            });
+                        }
+                    }
+
                     // For route form
                     const routeCragSelect = document.getElementById('route_crag_id');
                     if (routeCragSelect) {
@@ -705,6 +1000,32 @@
             }
         }
 
+        async function loadWallsForSector(cragId) {
+            const wallSelect = document.getElementById('sector_wall_id');
+            wallSelect.innerHTML = '<option value="">Loading...</option>';
+            if (!cragId) {
+                wallSelect.innerHTML = '<option value="">Select a crag first...</option>';
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/crags/${cragId}/walls`);
+                const data = await response.json();
+                wallSelect.innerHTML = '<option value="">Select a wall...</option>';
+                if (data.success && data.data.length > 0) {
+                    data.data.forEach(wall => {
+                        const option = document.createElement('option');
+                        option.value = wall.wall_id;
+                        option.textContent = `${wall.name_zh}${wall.name_en ? ' (' + wall.name_en + ')' : ''}`;
+                        wallSelect.appendChild(option);
+                    });
+                } else {
+                    wallSelect.innerHTML = '<option value="">No walls found for this crag</option>';
+                }
+            } catch (error) {
+                wallSelect.innerHTML = '<option value="">Error loading walls</option>';
+            }
+        }
+
         function switchTab(tabName) {
             // Hide all tab contents
             const contents = document.querySelectorAll('.tab-content');
@@ -736,33 +1057,98 @@
             e.preventDefault();
             
             const formData = new FormData(e.target);
-            const data = Object.fromEntries(formData.entries());
             
-            // Convert numeric fields
-            if (data.latitude) data.latitude = parseFloat(data.latitude);
-            if (data.longitude) data.longitude = parseFloat(data.longitude);
-            if (data.elevation_meters) data.elevation_meters = parseInt(data.elevation_meters);
+            // Handle file uploads - if there are files, use FormData; otherwise use JSON
+            const fileInput = document.getElementById('area_pictures');
+            const hasFiles = fileInput.files && fileInput.files.length > 0;
             
-            try {
-                const response = await fetch(`${API_BASE}/api/admin/areas`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(data)
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    showMessage('areaSuccess', `✅ Area "${data.name_zh}" created successfully!`);
-                    e.target.reset();
-                    await loadDropdownData(); // Refresh dropdowns
+            if (hasFiles) {
+                // Convert numeric fields for FormData - remove empty fields
+                const latitude = formData.get('latitude');
+                const longitude = formData.get('longitude');
+                const elevation = formData.get('elevation_meters');
+
+                if (latitude && latitude.trim() !== '') {
+                    formData.set('latitude', parseFloat(latitude));
                 } else {
-                    showMessage('areaError', `❌ Error: ${result.error}`, true);
+                    formData.delete('latitude');
                 }
-            } catch (error) {
-                showMessage('areaError', `❌ Network error: ${error.message}`, true);
+
+                if (longitude && longitude.trim() !== '') {
+                    formData.set('longitude', parseFloat(longitude));
+                } else {
+                    formData.delete('longitude');
+                }
+
+                if (elevation && elevation.trim() !== '') {
+                    formData.set('elevation_meters', parseInt(elevation));
+                } else {
+                    formData.delete('elevation_meters');
+                }
+                
+                try {
+                    const response = await fetch(`${API_BASE}/api/admin/areas`, {
+                        method: 'POST',
+                        body: formData // Send as FormData for file upload
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showMessage('areaSuccess', `✅ Area "${formData.get('name_zh')}" created successfully with photos!`);
+                        e.target.reset();
+                        document.getElementById('picturePreview').innerHTML = '';
+                        await loadDropdownData();
+                    } else {
+                        showMessage('areaError', `❌ Error: ${result.error}`, true);
+                    }
+                } catch (error) {
+                    showMessage('areaError', `❌ Network error: ${error.message}`, true);
+                }
+            } else {
+                // No files - use JSON as before
+                const data = Object.fromEntries(formData.entries());
+
+                // Convert numeric fields - remove empty fields
+                if (data.latitude && data.latitude.trim() !== '') {
+                    data.latitude = parseFloat(data.latitude);
+                } else {
+                    delete data.latitude;
+                }
+
+                if (data.longitude && data.longitude.trim() !== '') {
+                    data.longitude = parseFloat(data.longitude);
+                } else {
+                    delete data.longitude;
+                }
+
+                if (data.elevation_meters && data.elevation_meters.trim() !== '') {
+                    data.elevation_meters = parseInt(data.elevation_meters);
+                } else {
+                    delete data.elevation_meters;
+                }
+                
+                try {
+                    const response = await fetch(`${API_BASE}/api/admin/areas`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        showMessage('areaSuccess', `✅ Area "${data.name_zh}" created successfully!`);
+                        e.target.reset();
+                        await loadDropdownData();
+                    } else {
+                        showMessage('areaError', `❌ Error: ${result.error}`, true);
+                    }
+                } catch (error) {
+                    showMessage('areaError', `❌ Network error: ${error.message}`, true);
+                }
             }
         });
 
@@ -797,10 +1183,45 @@
                     e.target.reset();
                     await loadDropdownData(); // Refresh dropdowns
                 } else {
-                    showMessage('cragError', `❌ Error: ${result.error}`, true);
+                    showMessage('cragError', `❌ Error: ${result.error}${result.details ? ' - ' + result.details : ''}`, true);
                 }
             } catch (error) {
                 showMessage('cragError', `❌ Network error: ${error.message}`, true);
+            }
+        });
+
+        // Wall Form Submission
+        document.getElementById('wallForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const formData = new FormData(e.target);
+            const data = Object.fromEntries(formData.entries());
+
+            // Convert numeric fields
+            if (data.crag_id) data.crag_id = parseInt(data.crag_id);
+            if (data.wall_height_meters) data.wall_height_meters = parseInt(data.wall_height_meters);
+            if (data.wall_order) data.wall_order = parseInt(data.wall_order);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/walls`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    showMessage('wallSuccess', `✅ Wall "${data.name_zh}" created successfully!`);
+                    e.target.reset();
+                    await loadDropdownData();
+                } else {
+                    showMessage('wallError', `❌ Error: ${result.error}${result.details ? ' - ' + result.details : ''}`, true);
+                }
+            } catch (error) {
+                showMessage('wallError', `❌ Network error: ${error.message}`, true);
             }
         });
 
@@ -813,6 +1234,7 @@
             
             // Convert numeric fields
             if (data.crag_id) data.crag_id = parseInt(data.crag_id);
+            if (data.wall_id) data.wall_id = parseInt(data.wall_id);
             if (data.sector_order) data.sector_order = parseInt(data.sector_order);
             if (data.latitude) data.latitude = parseFloat(data.latitude);
             if (data.longitude) data.longitude = parseFloat(data.longitude);
@@ -852,7 +1274,7 @@
             if (data.sector_id) data.sector_id = parseInt(data.sector_id);
             if (data.length_meters) data.length_meters = parseInt(data.length_meters);
             if (data.bolt_count) data.bolt_count = parseInt(data.bolt_count);
-            if (data.quality_rating) data.quality_rating = parseInt(data.quality_rating);
+            if (data.rating) data.rating = parseInt(data.rating);
             if (data.route_order) data.route_order = parseInt(data.route_order);
             
             try {
@@ -884,15 +1306,17 @@
             
             try {
                 // Load all data
-                const [areasRes, cragsRes, sectorsRes, routesRes] = await Promise.all([
+                const [areasRes, cragsRes, wallsRes, sectorsRes, routesRes] = await Promise.all([
                     fetch(`${API_BASE}/api/areas`),
                     fetch(`${API_BASE}/api/crags`),
+                    fetch(`${API_BASE}/api/admin/walls`),
                     fetch(`${API_BASE}/api/sectors`),
                     fetch(`${API_BASE}/api/routes`)
                 ]);
-                
+
                 const areasData = await areasRes.json();
                 const cragsData = await cragsRes.json();
+                const wallsData = await wallsRes.json();
                 const sectorsData = await sectorsRes.json();
                 const routesData = await routesRes.json();
                 
@@ -913,6 +1337,7 @@
                                         🌐 ${area.latitude || 'N/A'}, ${area.longitude || 'N/A'}
                                     </small>
                                 </div>
+                                <button class="btn-edit" onclick="editItem('area', ${area.area_id}, '${area.name_zh}')">📝 Edit</button>
                                 <button class="btn-delete" onclick="deleteItem('area', ${area.area_id}, '${area.name_zh}')">🗑️ Delete</button>
                             </div>
                         `;
@@ -939,6 +1364,7 @@
                                         🪨 ${crag.rock_type_zh || crag.rock_type_en || 'Unknown rock'}
                                     </small>
                                 </div>
+                                <button class="btn-edit" onclick="editItem('crag', ${crag.crag_id}, '${crag.name_zh}')">📝 Edit</button>
                                 <button class="btn-delete" onclick="deleteItem('crag', ${crag.crag_id}, '${crag.name_zh}')">🗑️ Delete</button>
                             </div>
                         `;
@@ -949,6 +1375,33 @@
                 }
                 html += '</div>';
                 
+                // Walls section
+                html += '<div style="background: #f7fafc; padding: 20px; border-radius: 10px;">';
+                html += '<h3 style="color: #2d3748; margin-bottom: 15px;">🧱 Walls</h3>';
+                if (wallsData.success && wallsData.data.length > 0) {
+                    html += '<div style="display: grid; gap: 10px;">';
+                    wallsData.data.forEach(wall => {
+                        html += `
+                            <div class="item-container" style="border-left-color: #805ad5;">
+                                <div class="item-info">
+                                    <strong>${wall.name_zh}${wall.name_en ? ' (' + wall.name_en + ')' : ''}</strong><br>
+                                    <small style="color: #718096;">
+                                        🪨 Crag: ${wall.crag_name_zh || 'Unknown'} |
+                                        🧭 ${wall.orientation || 'N/A'} |
+                                        📏 ${wall.wall_height_meters ? wall.wall_height_meters + 'm' : 'N/A'}
+                                    </small>
+                                </div>
+                                <button class="btn-edit" onclick="editItem('wall', ${wall.wall_id}, '${wall.name_zh}')">📝 Edit</button>
+                                <button class="btn-delete" onclick="deleteItem('wall', ${wall.wall_id}, '${wall.name_zh}')">🗑️ Delete</button>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                } else {
+                    html += '<p style="color: #718096;">No walls found.</p>';
+                }
+                html += '</div>';
+
                 // Sectors section
                 html += '<div style="background: #f7fafc; padding: 20px; border-radius: 10px;">';
                 html += '<h3 style="color: #2d3748; margin-bottom: 15px;">📍 Sectors</h3>';
@@ -964,6 +1417,7 @@
                                         📍 Order: ${sector.sector_order || 'N/A'}
                                     </small>
                                 </div>
+                                <button class="btn-edit" onclick="editItem('sector', ${sector.sector_id}, '${sector.name_zh}')">📝 Edit</button>
                                 <button class="btn-delete" onclick="deleteItem('sector', ${sector.sector_id}, '${sector.name_zh}')">🗑️ Delete</button>
                             </div>
                         `;
@@ -980,7 +1434,7 @@
                 if (routesData.success && routesData.data.length > 0) {
                     html += '<div style="display: grid; gap: 10px;">';
                     routesData.data.forEach(route => {
-                        const gradeText = route.grade_yds || route.grade_french || 'No grade';
+                        const gradeText = route.grade || 'No grade';
                         const sectorText = route.sector_name_zh ? `${route.sector_name_zh} - ` : '';
                         html += `
                             <div class="item-container" style="border-left-color: #ed8936;">
@@ -990,9 +1444,10 @@
                                         🪨 ${sectorText}${route.crag_name_zh || 'Unknown crag'} | 
                                         📏 ${route.length_meters || 'N/A'}m | 
                                         🔩 ${route.bolt_count || 'N/A'} bolts |
-                                        ⭐ ${route.quality_rating ? '★'.repeat(route.quality_rating) : 'No rating'}
+                                        ⭐ ${route.rating ? '★'.repeat(route.rating) : 'No rating'}
                                     </small>
                                 </div>
+                                <button class="btn-edit" onclick="editItem('route', ${route.route_id}, '${route.name_zh}')">📝 Edit</button>
                                 <button class="btn-delete" onclick="deleteItem('route', ${route.route_id}, '${route.name_zh}')">🗑️ Delete</button>
                             </div>
                         `;
@@ -1035,6 +1490,650 @@
                 }
             } catch (error) {
                 alert(`❌ Network error: ${error.message}`);
+            }
+        }
+
+        // Modal management
+        function openModal() {
+            document.getElementById('editModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('editModal').style.display = 'none';
+            document.getElementById('editForm').reset();
+            currentEditItem = null;
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('editModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        let currentEditItem = null;
+
+        // Edit function - opens modal with populated form
+        async function editItem(type, id, name) {
+            currentEditItem = { type, id, name };
+
+            try {
+                // Fetch current data for the item
+                const response = await fetch(`${API_BASE}/api/admin/${type}s/${id}`);
+                if (!response.ok) {
+                    throw new Error('Failed to fetch item data');
+                }
+
+                const result = await response.json();
+                if (!result.success) {
+                    throw new Error(result.error);
+                }
+
+                const itemData = result.data;
+
+                // Populate modal
+                document.getElementById('modalTitle').textContent = `Edit ${type.charAt(0).toUpperCase() + type.slice(1)}: ${name}`;
+
+                // Generate form fields based on item type and data
+                const formHtml = generateEditForm(type, itemData);
+                document.getElementById('modalFormFields').innerHTML = formHtml;
+
+                // Load dropdown data if needed
+                if (type === 'crag' || type === 'route' || type === 'sector' || type === 'wall') {
+                    await loadDropdownDataForModal(type, itemData);
+                }
+
+                openModal();
+            } catch (error) {
+                alert(`Error loading ${type} data: ${error.message}`);
+            }
+        }
+
+        // Generate form HTML based on item type
+        function generateEditForm(type, data) {
+            switch(type) {
+                case 'area':
+                    return generateAreaForm(data);
+                case 'crag':
+                    return generateCragForm(data);
+                case 'wall':
+                    return generateWallForm(data);
+                case 'sector':
+                    return generateSectorForm(data);
+                case 'route':
+                    return generateRouteForm(data);
+                default:
+                    return '<p>Unsupported item type</p>';
+            }
+        }
+
+        function generateAreaForm(data) {
+            return `
+                <div class="form-section">
+                    <h3><span class="section-icon">📝</span>Basic Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_area_name_zh">Area Name (Chinese) *</label>
+                            <input type="text" id="edit_area_name_zh" name="name_zh" value="${data.name_zh || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_area_name_en">Area Name (English)</label>
+                            <input type="text" id="edit_area_name_en" name="name_en" value="${data.name_en || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_area_description_zh">Description (Chinese)</label>
+                            <textarea id="edit_area_description_zh" name="description_zh">${data.description_zh || ''}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_area_description_en">Description (English)</label>
+                            <textarea id="edit_area_description_en" name="description_en">${data.description_en || ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3><span class="section-icon">🌍</span>Location</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_area_country_zh">Country (Chinese)</label>
+                            <input type="text" id="edit_area_country_zh" name="country_zh" value="${data.country_zh || '中国'}">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_area_country_en">Country (English)</label>
+                            <input type="text" id="edit_area_country_en" name="country_en" value="${data.country_en || 'China'}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_area_province_zh">Province (Chinese)</label>
+                            <input type="text" id="edit_area_province_zh" name="province_zh" value="${data.province_zh || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_area_province_en">Province (English)</label>
+                            <input type="text" id="edit_area_province_en" name="province_en" value="${data.province_en || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_area_city_zh">City (Chinese)</label>
+                            <input type="text" id="edit_area_city_zh" name="city_zh" value="${data.city_zh || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_area_city_en">City (English)</label>
+                            <input type="text" id="edit_area_city_en" name="city_en" value="${data.city_en || ''}">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3><span class="section-icon">📍</span>Coordinates & Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_area_latitude">Latitude</label>
+                            <input type="number" step="0.000001" id="edit_area_latitude" name="latitude" value="${data.latitude || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_area_longitude">Longitude</label>
+                            <input type="number" step="0.000001" id="edit_area_longitude" name="longitude" value="${data.longitude || ''}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_area_elevation">Elevation (meters)</label>
+                        <input type="number" id="edit_area_elevation" name="elevation_meters" value="${data.elevation_meters || ''}">
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3><span class="section-icon">🚗</span>Access Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_area_access_notes_zh">Access Notes (Chinese)</label>
+                            <textarea id="edit_area_access_notes_zh" name="access_notes_zh">${data.access_notes_zh || ''}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_area_access_notes_en">Access Notes (English)</label>
+                            <textarea id="edit_area_access_notes_en" name="access_notes_en">${data.access_notes_en || ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateCragForm(data) {
+            return `
+                <div class="form-section">
+                    <h3><span class="section-icon">🏔️</span>Basic Information</h3>
+                    <div class="form-group">
+                        <label for="edit_crag_area_id">Parent Area *</label>
+                        <select id="edit_crag_area_id" name="area_id" required>
+                            <option value="">Select an area...</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_crag_name_zh">Crag Name (Chinese) *</label>
+                            <input type="text" id="edit_crag_name_zh" name="name_zh" value="${data.name_zh || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_crag_name_en">Crag Name (English)</label>
+                            <input type="text" id="edit_crag_name_en" name="name_en" value="${data.name_en || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_crag_description_zh">Description (Chinese)</label>
+                            <textarea id="edit_crag_description_zh" name="description_zh">${data.description_zh || ''}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_crag_description_en">Description (English)</label>
+                            <textarea id="edit_crag_description_en" name="description_en">${data.description_en || ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3><span class="section-icon">📍</span>Location & Access</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_crag_latitude">Latitude</label>
+                            <input type="number" step="0.000001" id="edit_crag_latitude" name="latitude" value="${data.latitude || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_crag_longitude">Longitude</label>
+                            <input type="number" step="0.000001" id="edit_crag_longitude" name="longitude" value="${data.longitude || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_crag_approach_time">Approach Time (minutes)</label>
+                            <input type="number" id="edit_crag_approach_time" name="approach_time_minutes" value="${data.approach_time_minutes || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_crag_approach_difficulty">Approach Difficulty (1-5)</label>
+                            <select id="edit_crag_approach_difficulty" name="approach_difficulty">
+                                <option value="">Select difficulty...</option>
+                                <option value="1" ${data.approach_difficulty == 1 ? 'selected' : ''}>1 - Very Easy</option>
+                                <option value="2" ${data.approach_difficulty == 2 ? 'selected' : ''}>2 - Easy</option>
+                                <option value="3" ${data.approach_difficulty == 3 ? 'selected' : ''}>3 - Moderate</option>
+                                <option value="4" ${data.approach_difficulty == 4 ? 'selected' : ''}>4 - Hard</option>
+                                <option value="5" ${data.approach_difficulty == 5 ? 'selected' : ''}>5 - Very Hard</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3><span class="section-icon">🪨</span>Rock Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_crag_rock_type_zh">Rock Type (Chinese)</label>
+                            <input type="text" id="edit_crag_rock_type_zh" name="rock_type_zh" value="${data.rock_type_zh || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_crag_rock_type_en">Rock Type (English)</label>
+                            <input type="text" id="edit_crag_rock_type_en" name="rock_type_en" value="${data.rock_type_en || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_crag_orientation">Wall Orientation</label>
+                            <select id="edit_crag_orientation" name="orientation">
+                                <option value="">Select orientation...</option>
+                                <option value="N" ${data.orientation === 'N' ? 'selected' : ''}>North (N)</option>
+                                <option value="NE" ${data.orientation === 'NE' ? 'selected' : ''}>Northeast (NE)</option>
+                                <option value="E" ${data.orientation === 'E' ? 'selected' : ''}>East (E)</option>
+                                <option value="SE" ${data.orientation === 'SE' ? 'selected' : ''}>Southeast (SE)</option>
+                                <option value="S" ${data.orientation === 'S' ? 'selected' : ''}>South (S)</option>
+                                <option value="SW" ${data.orientation === 'SW' ? 'selected' : ''}>Southwest (SW)</option>
+                                <option value="W" ${data.orientation === 'W' ? 'selected' : ''}>West (W)</option>
+                                <option value="NW" ${data.orientation === 'NW' ? 'selected' : ''}>Northwest (NW)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_crag_height">Wall Height (meters)</label>
+                            <input type="number" id="edit_crag_height" name="wall_height_meters" value="${data.wall_height_meters || ''}">
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateWallForm(data) {
+            return `
+                <div class="form-section">
+                    <h3><span class="section-icon">🪨</span>Basic Information</h3>
+                    <div class="form-group">
+                        <label for="edit_wall_crag_id">Parent Crag *</label>
+                        <select id="edit_wall_crag_id" name="crag_id" required>
+                            <option value="">Select a crag...</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_wall_name_zh">Wall Name (Chinese) *</label>
+                            <input type="text" id="edit_wall_name_zh" name="name_zh" value="${data.name_zh || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_wall_name_en">Wall Name (English)</label>
+                            <input type="text" id="edit_wall_name_en" name="name_en" value="${data.name_en || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_wall_description_zh">Description (Chinese)</label>
+                            <textarea id="edit_wall_description_zh" name="description_zh">${data.description_zh || ''}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_wall_description_en">Description (English)</label>
+                            <textarea id="edit_wall_description_en" name="description_en">${data.description_en || ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3><span class="section-icon">📐</span>Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_wall_orientation">Orientation</label>
+                            <select id="edit_wall_orientation" name="orientation">
+                                <option value="">Select orientation...</option>
+                                <option value="N" ${data.orientation === 'N' ? 'selected' : ''}>North (N)</option>
+                                <option value="NE" ${data.orientation === 'NE' ? 'selected' : ''}>Northeast (NE)</option>
+                                <option value="E" ${data.orientation === 'E' ? 'selected' : ''}>East (E)</option>
+                                <option value="SE" ${data.orientation === 'SE' ? 'selected' : ''}>Southeast (SE)</option>
+                                <option value="S" ${data.orientation === 'S' ? 'selected' : ''}>South (S)</option>
+                                <option value="SW" ${data.orientation === 'SW' ? 'selected' : ''}>Southwest (SW)</option>
+                                <option value="W" ${data.orientation === 'W' ? 'selected' : ''}>West (W)</option>
+                                <option value="NW" ${data.orientation === 'NW' ? 'selected' : ''}>Northwest (NW)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_wall_height">Wall Height (meters)</label>
+                            <input type="number" id="edit_wall_height" name="wall_height_meters" value="${data.wall_height_meters || ''}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_wall_order">Wall Order</label>
+                        <input type="number" id="edit_wall_order" name="wall_order" value="${data.wall_order || ''}" min="1">
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateSectorForm(data) {
+            return `
+                <div class="form-section">
+                    <h3><span class="section-icon">🪨</span>Basic Information</h3>
+                    <div class="form-group">
+                        <label for="edit_sector_crag_id">Parent Crag *</label>
+                        <select id="edit_sector_crag_id" name="crag_id" required>
+                            <option value="">Select a crag...</option>
+                        </select>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_sector_name_zh">Sector Name (Chinese) *</label>
+                            <input type="text" id="edit_sector_name_zh" name="name_zh" value="${data.name_zh || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_sector_name_en">Sector Name (English)</label>
+                            <input type="text" id="edit_sector_name_en" name="name_en" value="${data.name_en || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_sector_description_zh">Description (Chinese)</label>
+                            <textarea id="edit_sector_description_zh" name="description_zh">${data.description_zh || ''}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_sector_description_en">Description (English)</label>
+                            <textarea id="edit_sector_description_en" name="description_en">${data.description_en || ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3><span class="section-icon">📍</span>Position & Order</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_sector_order">Sector Order (left to right)</label>
+                            <input type="number" id="edit_sector_order" name="sector_order" value="${data.sector_order || ''}" min="1">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_sector_latitude">Latitude</label>
+                            <input type="number" step="0.000001" id="edit_sector_latitude" name="latitude" value="${data.latitude || ''}">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_sector_longitude">Longitude</label>
+                        <input type="number" step="0.000001" id="edit_sector_longitude" name="longitude" value="${data.longitude || ''}">
+                    </div>
+                </div>
+            `;
+        }
+
+        function generateRouteForm(data) {
+            return `
+                <div class="form-section">
+                    <h3><span class="section-icon">🧗</span>Basic Information</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_route_crag_id">Parent Crag *</label>
+                            <select id="edit_route_crag_id" name="crag_id" required>
+                                <option value="">Select a crag...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_route_sector_id">Sector *</label>
+                            <select id="edit_route_sector_id" name="sector_id" required>
+                                <option value="">Select a sector...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_route_name_zh">Route Name (Chinese) *</label>
+                            <input type="text" id="edit_route_name_zh" name="name_zh" value="${data.name_zh || ''}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_route_name_en">Route Name (English)</label>
+                            <input type="text" id="edit_route_name_en" name="name_en" value="${data.name_en || ''}">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3><span class="section-icon">📊</span>Grade & Difficulty</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_route_grade">Grade</label>
+                            <input type="text" id="edit_route_grade" name="grade" value="${data.grade || ''}" placeholder="e.g., 6a, 5.10a">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_route_quality">Quality Rating (1-5)</label>
+                            <select id="edit_route_quality" name="rating">
+                                <option value="">Select quality...</option>
+                                <option value="1" ${data.rating == 1 ? 'selected' : ''}>⭐ (1 star)</option>
+                                <option value="2" ${data.rating == 2 ? 'selected' : ''}>⭐⭐ (2 stars)</option>
+                                <option value="3" ${data.rating == 3 ? 'selected' : ''}>⭐⭐⭐ (3 stars)</option>
+                                <option value="4" ${data.rating == 4 ? 'selected' : ''}>⭐⭐⭐⭐ (4 stars)</option>
+                                <option value="5" ${data.rating == 5 ? 'selected' : ''}>⭐⭐⭐⭐⭐ (5 stars)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_route_order">Route Order (left to right)</label>
+                            <input type="number" id="edit_route_order" name="route_order" value="${data.route_order || ''}" min="1">
+                        </div>
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3><span class="section-icon">📏</span>Technical Details</h3>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_route_length">Length (meters)</label>
+                            <input type="number" id="edit_route_length" name="length_meters" value="${data.length_meters || ''}">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_route_bolts">Number of Bolts</label>
+                            <input type="number" id="edit_route_bolts" name="bolt_count" value="${data.bolt_count || ''}">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="edit_route_description_zh">Description (Chinese)</label>
+                            <textarea id="edit_route_description_zh" name="description_zh">${data.description_zh || ''}</textarea>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit_route_description_en">Description (English)</label>
+                            <textarea id="edit_route_description_en" name="description_en">${data.description_en || ''}</textarea>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Load dropdown data for modal forms
+        async function loadDropdownDataForModal(type, itemData) {
+            try {
+                if (type === 'crag') {
+                    // Load areas for crag edit
+                    const areasResponse = await fetch(`${API_BASE}/api/areas`);
+                    if (areasResponse.ok) {
+                        const areasData = await areasResponse.json();
+                        const areaSelect = document.getElementById('edit_crag_area_id');
+                        if (areaSelect && areasData.success && areasData.data) {
+                            areasData.data.forEach(area => {
+                                const option = document.createElement('option');
+                                option.value = area.area_id;
+                                option.textContent = `${area.name_zh} (${area.name_en})`;
+                                if (area.area_id === itemData.area_id) {
+                                    option.selected = true;
+                                }
+                                areaSelect.appendChild(option);
+                            });
+                        }
+                    }
+                } else if (type === 'wall') {
+                    // Load crags for wall edit
+                    const cragsResponse = await fetch(`${API_BASE}/api/crags`);
+                    if (cragsResponse.ok) {
+                        const cragsData = await cragsResponse.json();
+                        const cragSelect = document.getElementById('edit_wall_crag_id');
+                        if (cragSelect && cragsData.success && cragsData.data) {
+                            cragsData.data.forEach(crag => {
+                                const option = document.createElement('option');
+                                option.value = crag.crag_id;
+                                option.textContent = `${crag.name_zh} (${crag.name_en}) - ${crag.area_name_zh}`;
+                                if (crag.crag_id === itemData.crag_id) option.selected = true;
+                                cragSelect.appendChild(option);
+                            });
+                        }
+                    }
+                } else if (type === 'sector') {
+                    // Load crags for sector edit
+                    const cragsResponse = await fetch(`${API_BASE}/api/crags`);
+                    if (cragsResponse.ok) {
+                        const cragsData = await cragsResponse.json();
+                        const cragSelect = document.getElementById('edit_sector_crag_id');
+                        if (cragSelect && cragsData.success && cragsData.data) {
+                            cragsData.data.forEach(crag => {
+                                const option = document.createElement('option');
+                                option.value = crag.crag_id;
+                                option.textContent = `${crag.name_zh} (${crag.name_en}) - ${crag.area_name_zh}`;
+                                if (crag.crag_id === itemData.crag_id) {
+                                    option.selected = true;
+                                }
+                                cragSelect.appendChild(option);
+                            });
+                        }
+                    }
+                } else if (type === 'route') {
+                    // Load crags and sectors for route edit
+                    const [cragsResponse, sectorsResponse] = await Promise.all([
+                        fetch(`${API_BASE}/api/crags`),
+                        fetch(`${API_BASE}/api/sectors`)
+                    ]);
+
+                    if (cragsResponse.ok) {
+                        const cragsData = await cragsResponse.json();
+                        const cragSelect = document.getElementById('edit_route_crag_id');
+                        if (cragSelect && cragsData.success && cragsData.data) {
+                            cragsData.data.forEach(crag => {
+                                const option = document.createElement('option');
+                                option.value = crag.crag_id;
+                                option.textContent = `${crag.name_zh} (${crag.name_en}) - ${crag.area_name_zh}`;
+                                if (crag.crag_id === itemData.crag_id) {
+                                    option.selected = true;
+                                }
+                                cragSelect.appendChild(option);
+                            });
+                        }
+                    }
+
+                    if (sectorsResponse.ok) {
+                        const sectorsData = await sectorsResponse.json();
+                        const sectorSelect = document.getElementById('edit_route_sector_id');
+                        if (sectorSelect && sectorsData.success && sectorsData.data) {
+                            sectorsData.data.forEach(sector => {
+                                const option = document.createElement('option');
+                                option.value = sector.sector_id;
+                                option.textContent = `${sector.name_zh} (${sector.name_en}) - ${sector.crag_name_zh}`;
+                                if (sector.sector_id === itemData.sector_id) {
+                                    option.selected = true;
+                                }
+                                sectorSelect.appendChild(option);
+                            });
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading dropdown data for modal:', error);
+            }
+        }
+
+        // Handle form submission
+        async function saveEditItem() {
+            if (!currentEditItem) return;
+
+            const form = document.getElementById('editForm');
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            // Convert numeric fields based on item type
+            processNumericFields(currentEditItem.type, data);
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/${currentEditItem.type}s/${currentEditItem.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert(`✅ ${currentEditItem.type.charAt(0).toUpperCase() + currentEditItem.type.slice(1)} "${currentEditItem.name}" updated successfully!`);
+                    closeModal();
+                    await loadViewData(); // Refresh the view
+                    await loadDropdownData(); // Refresh dropdowns
+                } else {
+                    alert(`❌ Error updating ${currentEditItem.type}: ${result.error}`);
+                }
+            } catch (error) {
+                alert(`❌ Network error: ${error.message}`);
+            }
+        }
+
+        // Process numeric fields for API submission
+        function processNumericFields(type, data) {
+            switch(type) {
+                case 'area':
+                    if (data.latitude && data.latitude.trim() !== '') data.latitude = parseFloat(data.latitude);
+                    else delete data.latitude;
+                    if (data.longitude && data.longitude.trim() !== '') data.longitude = parseFloat(data.longitude);
+                    else delete data.longitude;
+                    if (data.elevation_meters && data.elevation_meters.trim() !== '') data.elevation_meters = parseInt(data.elevation_meters);
+                    else delete data.elevation_meters;
+                    break;
+                case 'wall':
+                    if (data.crag_id) data.crag_id = parseInt(data.crag_id);
+                    if (data.wall_height_meters && data.wall_height_meters.trim() !== '') data.wall_height_meters = parseInt(data.wall_height_meters);
+                    else delete data.wall_height_meters;
+                    if (data.wall_order && data.wall_order.trim() !== '') data.wall_order = parseInt(data.wall_order);
+                    else delete data.wall_order;
+                    break;
+                case 'crag':
+                    if (data.area_id) data.area_id = parseInt(data.area_id);
+                    if (data.latitude && data.latitude.trim() !== '') data.latitude = parseFloat(data.latitude);
+                    else delete data.latitude;
+                    if (data.longitude && data.longitude.trim() !== '') data.longitude = parseFloat(data.longitude);
+                    else delete data.longitude;
+                    if (data.approach_time_minutes && data.approach_time_minutes.trim() !== '') data.approach_time_minutes = parseInt(data.approach_time_minutes);
+                    else delete data.approach_time_minutes;
+                    if (data.approach_difficulty && data.approach_difficulty.trim() !== '') data.approach_difficulty = parseInt(data.approach_difficulty);
+                    else delete data.approach_difficulty;
+                    if (data.wall_height_meters && data.wall_height_meters.trim() !== '') data.wall_height_meters = parseInt(data.wall_height_meters);
+                    else delete data.wall_height_meters;
+                    break;
+                case 'sector':
+                    if (data.crag_id) data.crag_id = parseInt(data.crag_id);
+                    if (data.sector_order && data.sector_order.trim() !== '') data.sector_order = parseInt(data.sector_order);
+                    else delete data.sector_order;
+                    if (data.latitude && data.latitude.trim() !== '') data.latitude = parseFloat(data.latitude);
+                    else delete data.latitude;
+                    if (data.longitude && data.longitude.trim() !== '') data.longitude = parseFloat(data.longitude);
+                    else delete data.longitude;
+                    break;
+                case 'route':
+                    if (data.crag_id) data.crag_id = parseInt(data.crag_id);
+                    if (data.sector_id && data.sector_id.trim() !== '') data.sector_id = parseInt(data.sector_id);
+                    else delete data.sector_id;
+                    if (data.length_meters && data.length_meters.trim() !== '') data.length_meters = parseInt(data.length_meters);
+                    else delete data.length_meters;
+                    if (data.bolt_count && data.bolt_count.trim() !== '') data.bolt_count = parseInt(data.bolt_count);
+                    else delete data.bolt_count;
+                    if (data.rating && data.rating.trim() !== '') data.rating = parseInt(data.rating);
+                    else delete data.rating;
+                    if (data.route_order && data.route_order.trim() !== '') data.route_order = parseInt(data.route_order);
+                    else delete data.route_order;
+                    break;
             }
         }
     </script>
